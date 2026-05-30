@@ -261,34 +261,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const sections = document.querySelectorAll('section.collapsible-card');
     const navLinks = document.querySelectorAll('.nav-link');
     
-    // Intersection Observer Options
-    const observerOptions = {
-        root: null, // Viewport
-        rootMargin: '-80px 0px -60% 0px', // Shrink vertical margin bounds to activate exact sections
-        threshold: 0
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const id = entry.target.getAttribute('id');
-                
-                // Remove active class from all links
-                navLinks.forEach(link => {
-                    link.classList.remove('active');
-                    if (link.getAttribute('href') === `#${id}`) {
-                        link.classList.add('active');
-                        // Auto-scroll the horizontal nav to keep the active item visible on mobile
-                        link.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-                    }
-                });
-            }
-        });
-    }, observerOptions);
-
-    sections.forEach(section => {
-        observer.observe(section);
-    });
+    let isScrollingFromNav = false;
+    let scrollTimeout;
 
     // Helper to scroll to a section with dynamic offsets
     function scrollToSection(element) {
@@ -302,6 +276,80 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Scroll spy function to track current section based on scroll offset
+    function updateActiveNavOnScroll() {
+        if (isScrollingFromNav) return;
+
+        const tabsBarHeight = document.querySelector('.main-tabs-bar').offsetHeight || 51;
+        const dashboardBarHeight = document.getElementById('dashboard-bar').offsetHeight || 80;
+        const threshold = tabsBarHeight + dashboardBarHeight + 32; // Offset + buffer
+
+        // Check if page is scrolled near the bottom of the document
+        const isAtBottom = (window.innerHeight + window.pageYOffset) >= (document.documentElement.scrollHeight - 60);
+
+        let activeSection = null;
+
+        if (isAtBottom) {
+            activeSection = sections[sections.length - 1];
+        } else {
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                // A section is active if its top is above the threshold line and bottom is below it
+                if (rect.top <= threshold && rect.bottom > threshold) {
+                    activeSection = section;
+                }
+            });
+
+            // Fallback: choose the section closest to the threshold line
+            if (!activeSection) {
+                let minDistance = Infinity;
+                sections.forEach(section => {
+                    const rect = section.getBoundingClientRect();
+                    const distance = Math.abs(rect.top - threshold);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        activeSection = section;
+                    }
+                });
+            }
+        }
+
+        if (activeSection) {
+            const id = activeSection.getAttribute('id');
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === `#${id}`) {
+                    if (!link.classList.contains('active')) {
+                        navLinks.forEach(l => l.classList.remove('active'));
+                        link.classList.add('active');
+                        link.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    }
+                }
+            });
+        }
+    }
+
+    // Register high-performance throttled scroll listener with scroll lock debouncing
+    let scrollTick = false;
+    window.addEventListener('scroll', () => {
+        if (isScrollingFromNav) {
+            // Keep resetting the timeout while scrolling is active from a nav action.
+            // This ensures scroll spy doesn't run until scrolling has completely stopped.
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                isScrollingFromNav = false;
+            }, 150);
+            return;
+        }
+
+        if (!scrollTick) {
+            window.requestAnimationFrame(() => {
+                updateActiveNavOnScroll();
+                scrollTick = false;
+            });
+            scrollTick = true;
+        }
+    });
+
     // Explicit Nav Click Smooth Scroll (to account for collapsible panel heights)
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
@@ -310,6 +358,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const targetElement = document.querySelector(targetId);
             
             if (targetElement) {
+                // Set lock flag and highlight the clicked item immediately
+                isScrollingFromNav = true;
+                clearTimeout(scrollTimeout);
+                
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                link.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+
                 // If collapsed, expand first before scrolling
                 if (!targetElement.classList.contains('expanded')) {
                     const header = targetElement.querySelector('.card-header');
@@ -319,8 +375,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Scroll with offset
                 scrollToSection(targetElement);
 
-                // Update browser URL address bar hash without default jump scroll
+                // Update browser URL address bar hash
                 history.pushState(null, null, targetId);
+
+                // Start fallback timeout to release lock in case no scroll event fires (already at target)
+                scrollTimeout = setTimeout(() => {
+                    isScrollingFromNav = false;
+                }, 1000);
             }
         });
     });
@@ -379,7 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const embeddedScripts = {
         "New-UserProvisioning.ps1": {
-            description: "Comprehensive script that automates the complete onboarding process: creating the M365 user account, assigning licenses, waiting for directory sync, adding to group/DL, and sending a confirmation HTML email to the manager.",
+            description: "Comprehensive script that automates the complete onboarding process: creating the M365 user account, assigning licenses, adding to group/DL, and sending a confirmation HTML email to the manager.",
             requiredModules: ["Microsoft.Graph.Users", "Microsoft.Graph.Groups", "ExchangeOnlineManagement"],
             content: "77u/IyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQojIENPTkZJR1VSQVRJT04NCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQ0KJEZpcnN0TmFtZSAgICAgPSAiU2FyYWgiDQokTGFzdE5hbWUgICAgICA9ICJTbWl0aCINCiREaXNwbGF5TmFtZSAgID0gIiRGaXJzdE5hbWUgJExhc3ROYW1lIg0KJEpvYlRpdGxlICAgICAgPSAiU29mdHdhcmUgRW5naW5lZXIiDQokRGVwYXJ0bWVudCAgICA9ICJFbmdpbmVlcmluZyINCiRVc2FnZUxvY2F0aW9uID0gIkFVIiAgICAgICAgICAgICAgICAgIA0KJFRlbmFudERvbWFpbiAgPSAibWlsbGlvbm1vdmVzMjYub25taWNyb3NvZnQuY29tIg0KJE1hbmFnZXJFbWFpbCAgPSAibWFuYWdlckBtaWxsaW9ubW92ZXMyNi5vbm1pY3Jvc29mdC5jb20iDQokVGFyZ2V0R3JvdXAgICA9ICJBbGwgVXNlcnMiDQokVGFyZ2V0REwgICAgICA9ICJBbGwgU3RhZmYiDQokU2t1SWQgICAgICAgICA9ICJjYmRjMTRhYi1kOTZjLTRjMzAtYjlmNC02YWRhN2NkYzFkNDYiIA0KDQojIE5FVzogQWRqdXN0YWJsZSBhY2NvdW50IHN5bmMgZGVsYXkgKGluIHNlY29uZHMpDQokU3luY0RlbGF5ICAgICAgPSA1MCAjIDUwIHNlY3Mgd2FpdCBiZWZvcmUgYWRkaW5nIHVzZXIgdG8gYSBETCAvIGluY3JlYXNlIGRlbGF5IGlmIGZhaWxpbmcgdG8gYWRkDQoNCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQ0KIyBNT0RVTEUgJiBMT0dJTiBNQU5BR0VNRU5UDQojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0NCkltcG9ydC1Nb2R1bGUgTWljcm9zb2Z0LkdyYXBoLlVzZXJzLCBNaWNyb3NvZnQuR3JhcGguR3JvdXBzLCBFeGNoYW5nZU9ubGluZU1hbmFnZW1lbnQNCg0KV3JpdGUtSG9zdCAiQ2xlYXJpbmcgYWN0aXZlIG1lbW9yeSBzcGFjZXMuLi4iIC1Gb3JlZ3JvdW5kQ29sb3IgQ3lhbg0KRGlzY29ubmVjdC1NZ0dyYXBoIC1FcnJvckFjdGlvbiBTaWxlbnRseUNvbnRpbnVlIHwgT3V0LU51bGwNCkRpc2Nvbm5lY3QtRXhjaGFuZ2VPbmxpbmUgLUNvbmZpcm06JGZhbHNlIC1FcnJvckFjdGlvbiBTaWxlbnRseUNvbnRpbnVlIHwgT3V0LU51bGwNCg0KV3JpdGUtSG9zdCAiQ29ubmVjdGluZyB0byBNaWNyb3NvZnQgR3JhcGguLi4iIC1Gb3JlZ3JvdW5kQ29sb3IgQ3lhbg0KQ29ubmVjdC1NZ0dyYXBoIC1TY29wZXMgIlVzZXIuUmVhZFdyaXRlLkFsbCIsIkRpcmVjdG9yeS5SZWFkV3JpdGUuQWxsIiwiR3JvdXAuUmVhZFdyaXRlLkFsbCIsIk1haWwuU2VuZCIgLVRlbmFudElkICJiMmUwZWU5Yi05ZjIzLTQ0MWQtYjUyOC00MjE3NTliN2U4ZTciIC1Vc2VEZXZpY2VBdXRoZW50aWNhdGlvbg0KDQokQ3VycmVudENvbnRleHQgPSBHZXQtTWdDb250ZXh0DQokQWRtaW5FbWFpbCA9ICRDdXJyZW50Q29udGV4dC5BY2NvdW50DQoNCldyaXRlLUhvc3QgIkhvb2tpbmcgRXhjaGFuZ2UgT25saW5lIFNoZWxsIENvcmUgb250byAkQWRtaW5FbWFpbC4uLiIgLUZvcmVncm91bmRDb2xvciBDeWFuDQpDb25uZWN0LUV4Y2hhbmdlT25saW5lIC1Vc2VyUHJpbmNpcGFsTmFtZSAkQWRtaW5FbWFpbCAtT3JnYW5pemF0aW9uICJtaWxsaW9ubW92ZXMyNi5vbm1pY3Jvc29mdC5jb20iIC1FcnJvckFjdGlvbiBTdG9wIHwgT3V0LU51bGwNCg0KdHJ5IHsNCiAgICAjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KICAgICMgU1RFUCAxOiBDUkVBVEUgVVNFUg0KICAgICMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQogICAgJFJhbmRvbVBhc3N3b3JkID0gW1N5c3RlbS5JTy5QYXRoXTo6R2V0UmFuZG9tRmlsZU5hbWUoKSArIFtTeXN0ZW0uSU8uUGF0aF06OkdldFJhbmRvbUZpbGVOYW1lKCkuU3Vic3RyaW5nKDAsNCkuVG9VcHBlcigpICsgIjI2ISINCiAgICAkTWFpbE5pY2tuYW1lICAgPSAiJCgkRmlyc3ROYW1lKS4kKCRMYXN0TmFtZSkiLlRvTG93ZXIoKQ0KICAgICRVc2VyUHJpbmNpcGFsICA9ICIkTWFpbE5pY2tuYW1lQCRUZW5hbnREb21haW4iDQoNCiAgICBXcml0ZS1Ib3N0ICJgbltTVEVQIDFdIENyZWF0aW5nIHVzZXIgYWNjb3VudCBmb3IgJERpc3BsYXlOYW1lLi4uIiAtRm9yZWdyb3VuZENvbG9yIEN5YW4NCiAgICAkTmV3VXNlciA9IE5ldy1NZ1VzZXIgLUFjY291bnRFbmFibGVkIC1EaXNwbGF5TmFtZSAkRGlzcGxheU5hbWUgLUdpdmVuTmFtZSAkRmlyc3ROYW1lIC1TdXJuYW1lICRMYXN0TmFtZSAtSm9iVGl0bGUgJEpvYlRpdGxlIC1EZXBhcnRtZW50ICREZXBhcnRtZW50IC1Vc2FnZUxvY2F0aW9uICRVc2FnZUxvY2F0aW9uIC1NYWlsTmlja25hbWUgJE1haWxOaWNrbmFtZSAtVXNlclByaW5jaXBhbE5hbWUgJFVzZXJQcmluY2lwYWwgLVBhc3N3b3JkUHJvZmlsZSBAeyBGb3JjZUNoYW5nZVBhc3N3b3JkTmV4dFNpZ25JbiA9ICR0cnVlOyBQYXNzd29yZCA9ICRSYW5kb21QYXNzd29yZCB9IC1FcnJvckFjdGlvbiBTdG9wDQogICAgV3JpdGUtSG9zdCAiU3VjY2VzcyEgVXNlciBvYmplY3QgY3JlYXRlZC4iIC1Gb3JlZ3JvdW5kQ29sb3IgR3JlZW4NCg0KICAgICMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQogICAgIyBTVEVQIDI6IExJQ0VOU0UgQVNTSUdOTUVOVA0KICAgICMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQogICAgU2V0LU1nVXNlckxpY2Vuc2UgLVVzZXJJZCAkTmV3VXNlci5JZCAtQWRkTGljZW5zZXMgQChAeyBTa3VJZCA9ICRTa3VJZCB9KSAtUmVtb3ZlTGljZW5zZXMgQCgpIC1FcnJvckFjdGlvbiBTdG9wDQogICAgV3JpdGUtSG9zdCAiYG5bU1RFUCAyXSBBc3NpZ25pbmcgTGljZW5zZS4uLiIgLUZvcmVncm91bmRDb2xvciBDeWFuDQogICAgV3JpdGUtSG9zdCAiU3VjY2VzcyEgTGljZW5zZSBhc3NpZ25lZC4iIC1Gb3JlZ3JvdW5kQ29sb3IgR3JlZW4NCg0KICAgICMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQogICAgIyBTVEVQIHg6IFBST1BBR0FUSU9OIERFTEFZIChDUklUSUNBTCBGSVgpDQogICAgIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCiAgICBXcml0ZS1Ib3N0ICJgbldhaXRpbmcgJFN5bmNEZWxheSBzZWNvbmRzIGZvciBkaXJlY3Rvcnkgc3luY2hyb25pemF0aW9uLi4uIiAtRm9yZWdyb3VuZENvbG9yIFllbGxvdw0KICAgIFN0YXJ0LVNsZWVwIC1TZWNvbmRzICRTeW5jRGVsYXkNCg0KICAgICMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQogICAgIyBTVEVQIDM6IEdST1VQIE1FTUJFUlNISVBTDQogICAgIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCiAgICAjIE0zNjUgR3JvdXANCiAgICBXcml0ZS1Ib3N0ICJgbltTVEVQIDNdIERpc2NvdmVyaW5nIGFjdGl2ZSBhZG1pbmlzdHJhdG9yIGlkZW50aXR5Li4uJyIgLUZvcmVncm91bmRDb2xvciBDeWFuDQogICAgV3JpdGUtSG9zdCAiQXR0ZW1wdGluZyB0byBhZGQgdXNlciB0byBNMzY1IEdyb3VwICckVGFyZ2V0R3JvdXAnLi4uIiAtRm9yZWdyb3VuZENvbG9yIEN5YW4NCiAgICAkR3JvdXAgPSBHZXQtTWdHcm91cCAtRmlsdGVyICJkaXNwbGF5TmFtZSBlcSAnJFRhcmdldEdyb3VwJyIgLUVycm9yQWN0aW9uIFNpbGVudGx5Q29udGludWUNCiAgICBpZiAoJEdyb3VwKSB7DQogICAgICAgIE5ldy1NZ0dyb3VwTWVtYmVyIC1Hcm91cElkICRHcm91cC5JZCAtRGlyZWN0b3J5T2JqZWN0SWQgJE5ld1VzZXIuSWQgLUVycm9yQWN0aW9uIFNpbGVudGx5Q29udGludWUNCiAgICAgICAgV3JpdGUtSG9zdCAiU3VjY2VzcyEgQWRkZWQgdG8gTTM2NSBHcm91cCAnJFRhcmdldEdyb3VwJy4iIC1Gb3JlZ3JvdW5kQ29sb3IgR3JlZW4NCiAgICB9DQoNCiAgICAjIERpc3RyaWJ1dGlvbiBMaXN0DQogICAgV3JpdGUtSG9zdCAiQXR0ZW1wdGluZyB0byBhZGQgdXNlciB0byBETCAnJFRhcmdldERMJy4uLiIgLUZvcmVncm91bmRDb2xvciBDeWFuDQ5IHRyeSB7DQogICAgICAgIEFkZC1EaXN0cmlidXRpb25Hcm91cE1lbWJlciAtSWRlbnRpdHkgJFRhcmdldERMIC1NZW1iZXIgJFVzZXJQcmluY2lwYWwgLUJ5cGFzc1NlY3VyaXR5R3JvdXBNYW5hZ2VyQ2hlY2sgLUVycm9yQWN0aW9uIFN0b3ANCiAgICAgICAgV3JpdGUtSG9zdCAiU3VjY2VzcyEgQWRkZWQgdG8gREwgJyRUYXJnZXRETFkuIiAtRm9yZWdyb3VuZENvbG9yIEdyZWVuDQogICAgfQ0KICAgIGNhdGNoIHsNCiAgICAgICAgaWYgKCRfLkV4Y2VwdGlvbi5NZXNzYWdlIC1saWtlICoqYWxyZWFkeSBleGlzdHMqKikgew0KICAgICAgICAgICAgV3JpdGUtSG9zdCAiIFtTS0lQXSBVc2VyIGFscmVhZHkgaW4gJyRUYXJnZXRETFkuIiAtRm9yZWdyb3VuZENvbG9yIFllbGxvdw0KICAgICAgICB9IGVsc2Ugew0KICAgICAgICAgICAgV3JpdGUtSG9zdCAiIFtFUlJPUl0gVW5hYmxlIHRvIGFkZCB0byBETCAnJFRhcmdldERMLiBJbmNyZWFzZSBkZWxheSB0byBlbnN1cmUgY29tcGxldGUgc3luY2hyb25pemF0aW9uLiIgLUZvcmVncm91bmRDb2xvciBSZWQNCiAgICAgICAgfQ0KICAgIH0NCiAgICAgICAgIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCiAgICAjIFNURVAgNDogU0VORCBXRUxDT01FIEVNQUlMIFRPIE1BTkFHRVINCiAgICAjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KICAgIFdyaXRlLUhvc3QgImBuW1NURVAgNF0gRGlzY292ZXJpbmcgYWN0aXZlIGFkbWluaXN0cmF0b3IgaWRlbnRpdHkuLi4iIC1Gb3JlZ3JvdW5kQ29sb3IgQ3lhbg0KICAgICRDdXJyZW50Q29udGV4dCA9IEdldC1NZ0NvbnRleHQNCiAgICAkQWRtaW5FbWFpbCA9ICRDdXJyZW50Q29udGV4dC5BY2NvdW50DQoNCiAgICBXcml0ZS1Ib3N0ICJEcmFmdGluZyBwcm92aXNpb25pbmcgb3ZlcnZpZXcgZm9yICRNYW5hZ2VyRW1haWwuLi4iIC1Gb3JlZ3JvdW5kQ29sb3IgQ3lhbg0KICAgIA0KICAgICRFbWFpbEJvZHkgPSBAIg0KICAgIDxodG1sPg0KICAgIDxib2R5IHN0eWxlPSJmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGxpbmUtaGVpZ2h0OiAxLjY7IGNvbG9yOiAjMzMzMzMzOyI+DQogICAgICAgIDxoMiBzdHlsZT0iY29sb3I6ICMwMDc4ZDQ7Ij5Vc2VyIE9uYm9hcmRpbmcgQXV0b21hdGVkIFJlcG9ydDwvaDI+DQogICAgICAgIDxwPkhlbGxvLDwvcD4NCiAgICAgICAgPHA+VGhlIHN5c3RlbSBwcm9maWxlIHNldHVwIGZvciA8c3Ryb25nPiREaXNwbGF5TmFtZTwvc3Ryb25nPiBoYXMgZmluaXNoZWQgcHJvY2Vzc2luZy48L3A+DQogICAgICAgIA0KICAgICAgICA8dGFibGUgc3R5bGU9ImJvcmRlci1jb2xsYXBzZTogY29sbGFwc2U7IHdpZHRoOiAxMDAlOyBtYXgtd2lkdGg6IDUwMHB4OyBtYXJnaW46IDIwcHggMDsiPg0KICAgICAgICAgICAgPHRyIHN0eWxlPSJiYWNrZ3JvdW5kLWNvbG9yOiAjZjJmMmYyOyI+DQogICAgICAgICAgICAgICAgPHRoIHN0eWxlPSJib3JkZXI6IDFweCBzb2xpZCAjZGRkZGRkOyB0ZXh0LWFsaWduOiBsZWZ0OyBwYWRkaW5nOiA4cHg7IHdpZHRoOiA0MCU7Ij5EZXRhaWwgUmVzb3VyY2U8L3RoPg0KICAgICAgICAgICAgICAgIDx0aCBzdHlsZT0iYm9yZGVyOiAxcHggc29saWQgI2RkZGRkZDsgdGV4dC1hbGlnbjogbGVmdDsgcGFkZGluZzogOHB4OyI+VGFyZ2V0IFZhbHVlPC90aD4NCiAgICAgICAgICAgIDwvdHI+DQogICAgICAgICAgICA8dHI+DQogICAgICAgICAgICAgICAgPHRkIHN0eWxlPSJib3JkZXI6IDFweCBzb2xpZCAjZGRkZGRkOyBwYWRkaW5nOiA4cHg7IGZvbnQtd2VpZ2h0OiBib2xkOyI+VXNlciBQcmluY2lwYWwgTmFtZTo8L3RkPg0KICAgICAgICAgICAgICAgIDx0ZCBzdHlsZT0iYm9yZGVyOiAxcHggc29saWQgI2RkZGRkZDsgdGV4dC1hbGlnbjogbGVmdDsgcGFkZGluZzogOHB4OyBjb2xvcjogIzAwNzhkNDsiPiRVc2VyUHJpbmNpcGFsPC90ZD4NCiAgICAgICAgICAgIDwvdHI+DQogICAgICAgICAgICA8dHI+DQogICAgICAgICAgICAgICAgPHRkIHN0eWxlPSJib3JkZXI6IDFweCBzb2xpZCAjZGRkZGRkOyBwYWRkaW5nOiA4cHg7IGZvbnQtd2VpZ2h0OiBib2xkOyI+VGVtcG9yYXJ5IFBhc3N3b3JkOjwvdGQ+DQogICAgICAgICAgICAgICAgPHRkIHN0eWxlPSJib3JkZXI6IDFweCBzb2xpZCAjZGRkZGRkOyBwYWRkaW5nOiA4cHg7IGZvbnQtZmFtaWx5OiBDb25zb2xhcywgbW9ub3NwYWNlOyBiYWNrZ3JvdW5kLWNvbG9yOiAjZmFmYWZhOyI+JFJhbmRvbVBhc3N3b3JkPC90ZD4NCiAgICAgICAgICAgIDwvdHI+DQogICAgICAgICAgICA8dHI+DQogICAgICAgICAgICAgICAgPHRkIHN0eWxlPSJib3JkZXI6IDFweCBzb2xpZCAjZGRkZGRkOyBwYWRkaW5nOiA4cHg7IGZvbnQtd2VpZ2h0OiBib2xkOyI+QXNzaWduZWQgTGljZW5zZSBQbGFuOjwvdGQ+DQogICAgICAgICAgICAgICAgPHRkIHN0eWxlPSJib3JkZXI6IDFweCBzb2xpZCAjZGRkZGRkOyBwYWRkaW5nOiA4cHg7Ij5NMzY1IEJ1c2luZXNzIFByZW1pdW0gKFNQQiBCdW5kbGUpPC90ZD4NCiAgICAgICAgICAgIDwvdHI+DQogICAgICAgIDwvdGFibGU+DQKDQogICAgICAgIDxwIHN0eWxlPSJiYWNrZ3JvdW5kLWNvbG9yOiAjZmZmOWU2OyBib3JkZXItbGVmdDogNHB4IHNvbGlkICNmZmNjMDA7IHBhZGRpbmc6IDEwcHg7IG1heC13aWR0aDogNTAwcHg7Ij4NCiAgICAgICAgICAgIDxzdHJvbmc+TUZBIFdhcm5pbmc6PC9zdHJvbmc+IENvbmRpdGlvbmFsIEFjY2VzcyBQb2xpY2llcyBhcmUgYWN0aXZlIGZvciB0aGlzIGFjY291bnQuIFRoZSB1c2VyIHdpbGwgYmUgcmVxdWVzdGVkIHRvIGVucm9sbCBhbiBhdXRoZW50aWNhdG9yIG1ldGhvZCBhbmQgY3ljbGUgdGhlaXIgcGFzc3dvcmQgaW1tZWRpYXRlbHkgdXBvbiB0aGVpciBmaXJzdCBhdXRoZW50aWNhdG9yIGldmVudC4NCiAgICAgICAgPC9wPg0KICAgICAgICANCiAgICAgICAgPHA+UmVnYXJkcyw8YnI+SVQgSWRlbnRpdHkgUHJvdmlzaW9uaW5nIFN5c3RlbSw8L3A+DQogICAgPC9ib2R5Pg0KICAgIDwvaHRtbD4NCiJANCg0KICAgICRNYWlsUGFyYW1ldGVycyA9IEB7DQogICAgICAgIFVzZXJJZCA9ICRBZG1pbkVtYWlsDQogICAgICAgIE1lc3NhZ2UgPSBAew0KICAgICAgICAgICAgU3ViamVjdCA9ICJBY2NvdW50IFJlYWR5OiAkRGlzcGxheU5hbWUgKCRVc2VyUHJpbmNpcGFsKSINCiAgICAgICAgICAgIEJvZHkgPSBAew0KICAgICAgICAgICAgICAgIENvbnRlbnRUeXBlID0gIkh0bWwiDQogICAgICAgICAgICAgICAgQ29udGVudCAgICAgPSAkRW1haWxCb2R5DQogICAgICAgICAgICB9DQogICAgICAgICAgICBUb1JlY2lwaWVudHMgPSBAKA0KICAgICAgICAgICAgICAgIEB7IEVtYWlsQWRkcmVzcyA9IEB7IEFkZHJlc3MgPSAkTWFuYWdlckVtYWlsIH0gfQ0KICAgICAgICAgICAgKQ0KICAgICAgICB9DQogICAgfQ0KDQogICAgV3JpdGUtSG9zdCAiVHJhbnNtaXR0aW5nIGNyZWRlbnRpYWwgZGlzcGF0Y2ggdmlhIEdyYXBoIE1haWwgRW5naW5lLi4uIiAtRm9yZWdyb3VuZENvbG9yIEN5YW4NCiAgICBTZW5kLU1nVXNlck1haWwgQE1haWxQYXJhbWV0ZXJzIC1FcnJvckFjdGlvbiBTdG9wDQogICAgV3JpdGUtSG9zdCAiU3VjY2VzcyEgTm90aWZpY2F0aW9uIHNlbnQgc2FmZWx5IHRvICRNYW5hZ2VyRW1haWwuIiAtRm9yZWdyb3VuZENvbG9yIEdyZWVuDQoNCiAgICBXcml0ZS1Ib3N0ICJgbj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0iIC1Gb3JlZ3JvdW5kQ29sb3IgR3JlZW4NCiAgICBXcml0ZS1Ib3N0ICIgQ09NUExFVEU6IEF1dG9tYXRlZCBwcm92aXNpb25pbmcgZXhlY3V0aW9uIGVuZGVkIHN1Y2Nlc3NmdWxseSEiIC1Gb3JlZ3JvdW5kQ29sb3IgR3JlZW4NCiAgICBXcml0ZS1Ib3N0ICI9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09YG4iIC1Gb3JlZ3JvdW5kQ29sb3IgR3JlZW4NCg0KDQp9DQpjYXRjaCB7DQogICAgJFJldHVybiA9ICJba2V5d29yZF0iOw0KICAgIFdyaXRlLUhvc3QgImBuIFtDUklUSUNBTCBFUlJPUl0gVXNlciBhbHJlYWR5IGV4aXN0cy4iIC1Gb3JlZ3JvdW5kQ29sb3IgUmVkDQp9DQpmaW5hbGx5IHsNCiAgICBEaXNjb25uZWN0LU1nR3JhcGggLUVycm9yQWN0aW9uIFNpbGVudGx5Q29udGludWUgfCBPdXQtTnVsbA0KICAgIERpc2Nvbm5lY3QtRXhjaGFuZ2VPbmxpbmUgLUNvbmZpcm06JGZhbHNlIC1FcnJvckFjdGlvbiBTaWxlbnRseUNvbnRpbnVlIHwgT3V0LU51bGwNCn0="
         },
@@ -457,6 +518,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if (targetElement) {
                 switchTab('guide');
                 
+                // Highlight the correct nav link immediately
+                const correspondingLink = document.querySelector(`.nav-link[href="${hash}"]`);
+                if (correspondingLink) {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    correspondingLink.classList.add('active');
+                    correspondingLink.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                }
+
+                // Lock scroll spy during initialization scroll
+                isScrollingFromNav = true;
+                clearTimeout(scrollTimeout);
+                
                 // Expand card if collapsed
                 if (!targetElement.classList.contains('expanded')) {
                     const header = targetElement.querySelector('.card-header');
@@ -466,6 +539,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Scroll to target element
                 setTimeout(() => {
                     scrollToSection(targetElement);
+                    // Safe release after scroll has finished
+                    scrollTimeout = setTimeout(() => {
+                        isScrollingFromNav = false;
+                    }, 1000);
                 }, 300);
             }
         }
@@ -645,6 +722,36 @@ document.addEventListener('DOMContentLoaded', () => {
             }).catch(err => {
                 console.error('Failed to copy script: ', err);
             });
+        });
+    }
+
+    // ==========================================
+    // 8. STEP 4 SUB-TAB CONTROLLER
+    // ==========================================
+    const subTabDlBtn = document.getElementById('sub-tab-dl');
+    const subTabM365Btn = document.getElementById('sub-tab-m365');
+    const subPanelDl = document.getElementById('sub-panel-dl');
+    const subPanelM365 = document.getElementById('sub-panel-m365');
+
+    if (subTabDlBtn && subTabM365Btn && subPanelDl && subPanelM365) {
+        subTabDlBtn.addEventListener('click', () => {
+            subTabDlBtn.classList.add('active');
+            subTabDlBtn.setAttribute('aria-selected', 'true');
+            subTabM365Btn.classList.remove('active');
+            subTabM365Btn.setAttribute('aria-selected', 'false');
+
+            subPanelDl.classList.add('active');
+            subPanelM365.classList.remove('active');
+        });
+
+        subTabM365Btn.addEventListener('click', () => {
+            subTabM365Btn.classList.add('active');
+            subTabM365Btn.setAttribute('aria-selected', 'true');
+            subTabDlBtn.classList.remove('active');
+            subTabDlBtn.setAttribute('aria-selected', 'false');
+
+            subPanelM365.classList.add('active');
+            subPanelDl.classList.remove('active');
         });
     }
 

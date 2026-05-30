@@ -523,7 +523,7 @@
                 aria-controls="body-group">
                 <div class="card-title-area">
                     <span class="step-badge">Step 4</span>
-                    <h2>Add User to "All Staff" Distribution List Group</h2>
+                    <h2>Add User to "All Staff" Group</h2>
                 </div>
                 <div class="card-action-area">
                     <span class="expand-label">Click to collapse</span>
@@ -536,127 +536,256 @@
             </header>
 
             <div class="card-body" id="body-group">
-                <div class="step-list">
+                <!-- Sub-tab switcher -->
+                <div class="sub-tabs-bar" role="tablist" aria-label="Group Type Options">
+                    <button class="sub-tab-btn active" id="sub-tab-dl" role="tab" aria-selected="true" aria-controls="sub-panel-dl">
+                        Distribution List
+                    </button>
+                    <button class="sub-tab-btn" id="sub-tab-m365" role="tab" aria-selected="false" aria-controls="sub-panel-m365">
+                        Microsoft 365 Group
+                    </button>
+                </div>
 
-                    <div class="step-item">
-                        <div class="step-number-sub">4.1</div>
-                        <div class="step-details">
-                            <p>To ensure the new hire receives global internal corporate announcements:</p>
-                            <p>In the M365 Admin Center left-hand side navigation pane, expand <strong>Teams &
-                                    groups</strong> and click on <strong>Active teams & groups</strong>.</p>
-                            <p>Navigate to the <strong>Distribution list</strong> tab, find the <strong>All
-                                    Staff</strong> group list entry, and click directly on it to slide open its
-                                management pane.</p>
+                <!-- Sub-tab Panel 1: Distribution List -->
+                <div id="sub-panel-dl" class="sub-tab-panel active" role="tabpanel" aria-labelledby="sub-tab-dl">
+                    <div class="step-list">
+                        <div class="step-item">
+                            <div class="step-number-sub">4.1</div>
+                            <div class="step-details">
+                                <p>To ensure the new hire receives global internal corporate announcements:</p>
+                                <p>In the M365 Admin Center left-hand side navigation pane, expand <strong>Teams &
+                                        groups</strong> and click on <strong>Active teams & groups</strong>.</p>
+                                <p>Navigate to the <strong>Distribution list</strong> tab, find the <strong>All
+                                        Staff</strong> group list entry, and click directly on it to slide open its
+                                    management pane.</p>
 
-                            <div class="screenshot-wrapper">
-                                <img src="images/09-add-group-members-1.png"
-                                    alt="Screenshot showing Active Teams and Groups list on the Distribution List tab, selecting All Staff"
-                                    class="zoomable-screenshot">
-                                <div class="zoom-overlay">
-                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
-                                    </svg>
-                                    <span>Click to Zoom</span>
+                                <div class="screenshot-wrapper">
+                                    <img src="images/09-add-group-members-1.png"
+                                        alt="Screenshot showing Active Teams and Groups list on the Distribution List tab, selecting All Staff"
+                                        class="zoomable-screenshot">
+                                    <div class="zoom-overlay">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                        </svg>
+                                        <span>Click to Zoom</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="step-item">
-                        <div class="step-number-sub">4.2</div>
-                        <div class="step-details">
-                            <p>In the <strong>All Staff</strong> details pane:</p>
-                            <ol>
-                                <li>Navigate to the <strong>Members</strong> tab at the top.</li>
-                                <li>Click on the <strong>View all and manage members</strong> link.</li>
-                            </ol>
+                        <div class="step-item">
+                            <div class="step-number-sub">4.2</div>
+                            <div class="step-details">
+                                <p>In the <strong>All Staff</strong> details pane:</p>
+                                <ol>
+                                    <li>Navigate to the <strong>Members</strong> tab at the top.</li>
+                                    <li>Click on the <strong>View all and manage members</strong> link.</li>
+                                </ol>
 
-                            <div class="screenshot-wrapper">
-                                <img src="images/09-add-group-members-2.png"
-                                    alt="Screenshot showing Active Teams and Groups list on the Distribution List tab, selecting All Staff"
-                                    class="zoomable-screenshot">
-                                <div class="zoom-overlay">
-                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
-                                    </svg>
-                                    <span>Click to Zoom</span>
+                                <div class="screenshot-wrapper">
+                                    <img src="images/09-add-group-members-2.png"
+                                        alt="Screenshot showing Active Teams and Groups list on the Distribution List tab, selecting All Staff"
+                                        class="zoomable-screenshot">
+                                    <div class="zoom-overlay">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                        </svg>
+                                        <span>Click to Zoom</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="step-item">
-                        <div class="step-number-sub">4.3</div>
-                        <div class="step-details">
-                            <p>Click <strong>+ Add members</strong> in the toolbar.</p>
+                        <div class="step-item">
+                            <div class="step-number-sub">4.3</div>
+                            <div class="step-details">
+                                <p>Click <strong>+ Add members</strong> in the toolbar.</p>
 
-                            <div class="screenshot-wrapper">
-                                <img src="images/09-add-group-members-3.png"
-                                    alt="Screenshot showing Active Teams and Groups list on the Distribution List tab, selecting All Staff"
-                                    class="zoomable-screenshot">
-                                <div class="zoom-overlay">
-                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
-                                    </svg>
-                                    <span>Click to Zoom</span>
+                                <div class="screenshot-wrapper">
+                                    <img src="images/09-add-group-members-3.png"
+                                        alt="Screenshot showing Active Teams and Groups list on the Distribution List tab, selecting All Staff"
+                                        class="zoomable-screenshot">
+                                    <div class="zoom-overlay">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                        </svg>
+                                        <span>Click to Zoom</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="step-item">
-                        <div class="step-number-sub">4.4</div>
-                        <div class="step-details">
-                            <ol>
-                                <li>Search for the newly created staff member in the search box</li>
-                                <li>Select the checkbox next to their name</li>
-                                <li>click <strong>Add</strong>.</li>
-                            </ol>
+                        <div class="step-item">
+                            <div class="step-number-sub">4.4</div>
+                            <div class="step-details">
+                                <ol>
+                                    <li>Search for the newly created staff member in the search box</li>
+                                    <li>Select the checkbox next to their name</li>
+                                    <li>click <strong>Add</strong>.</li>
+                                </ol>
 
-                            <div class="screenshot-wrapper">
-                                <img src="images/09-add-group-members-4.png"
-                                    alt="Screenshot showing Active Teams and Groups list on the Distribution List tab, selecting All Staff"
-                                    class="zoomable-screenshot">
-                                <div class="zoom-overlay">
-                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
-                                    </svg>
-                                    <span>Click to Zoom</span>
+                                <div class="screenshot-wrapper">
+                                    <img src="images/09-add-group-members-4.png"
+                                        alt="Screenshot showing Active Teams and Groups list on the Distribution List tab, selecting All Staff"
+                                        class="zoomable-screenshot">
+                                    <div class="zoom-overlay">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                        </svg>
+                                        <span>Click to Zoom</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-
-
-                    <div class="step-item">
-                        <div class="step-number-sub">4.5</div>
-                        <div class="step-details">
-                            <p>Confirm the user now appears in the member list.</p>
-                            <div class="screenshot-wrapper">
-                                <img src="images/09-add-group-members-5.png"
-                                    alt="Screenshot showing Active Teams and Groups list on the Distribution List tab, selecting All Staff"
-                                    class="zoomable-screenshot">
-                                <div class="zoom-overlay">
-                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
-                                    </svg>
-                                    <span>Click to Zoom</span>
-                                </div>
-                            </div>    
+                        <div class="step-item">
+                            <div class="step-number-sub">4.5</div>
+                            <div class="step-details">
+                                <p>Confirm the user now appears in the member list.</p>
+                                <div class="screenshot-wrapper">
+                                    <img src="images/09-add-group-members-5.png"
+                                        alt="Screenshot showing Active Teams and Groups list on the Distribution List tab, selecting All Staff"
+                                        class="zoomable-screenshot">
+                                    <div class="zoom-overlay">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                        </svg>
+                                        <span>Click to Zoom</span>
+                                    </div>
+                                </div>    
+                            </div>
                         </div>
                     </div>
+                </div>
 
+                <!-- Sub-tab Panel 2: Microsoft 365 Group -->
+                <div id="sub-panel-m365" class="sub-tab-panel" role="tabpanel" aria-labelledby="sub-tab-m365">
+                    <div class="step-list">
+                        <div class="step-item">
+                            <div class="step-number-sub">4.1</div>
+                            <div class="step-details">
+                                <p>To ensure the new hire is added to the modern collaboration workspace:</p>
+                                <p>In the M365 Admin Center left-hand side navigation pane, expand <strong>Teams & groups</strong> and click on <strong>Active teams & groups</strong>.</p>
+                                <p>Search for the <strong>All Staff Group</strong> Microsoft 365 group list entry, and click directly on it to open its management pane.</p>
+
+                                <div class="screenshot-wrapper">
+                                    <img src="images/21.png"
+                                        alt="Screenshot showing Active Teams and Groups list, selecting All Staff Group (Microsoft 365 type)"
+                                        class="zoomable-screenshot">
+                                    <div class="zoom-overlay">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                        </svg>
+                                        <span>Click to Zoom</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-item">
+                            <div class="step-number-sub">4.2</div>
+                            <div class="step-details">
+                                <p>In the <strong>All Staff Group</strong> details pane:</p>
+                                <ol>
+                                    <li>Navigate to the <strong>Membership</strong> tab in the middle of the layout.</li>
+                                    <li>Select the <strong>Members</strong> category from the list.</li>
+                                    <li>Click on the blue <strong>Add members</strong> button.</li>
+                                </ol>
+
+                                <div class="screenshot-wrapper">
+                                    <img src="images/22.png"
+                                        alt="Screenshot showing the Membership tab, Members selection, and the Add members button inside the panel"
+                                        class="zoomable-screenshot">
+                                    <div class="zoom-overlay">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                        </svg>
+                                        <span>Click to Zoom</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-item">
+                            <div class="step-number-sub">4.3</div>
+                            <div class="step-details">
+                                <ol>
+                                    <li>Search for the newly created staff member in the search box (e.g. <strong>John Smith</strong>).</li>
+                                    <li>Select the checkbox next to their name.</li>
+                                    <li>Click the blue <strong>Add (1)</strong> button at the bottom of the flyout pane.</li>
+                                </ol>
+
+                                <div class="screenshot-wrapper">
+                                    <img src="images/23.png"
+                                        alt="Screenshot showing searching for the user and clicking the Add button"
+                                        class="zoomable-screenshot">
+                                    <div class="zoom-overlay">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                        </svg>
+                                        <span>Click to Zoom</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-item">
+                            <div class="step-number-sub">4.4</div>
+                            <div class="step-details">
+                                <p>Verify that the pane displays a green confirmation message indicating the user was successfully added as a team member.</p>
+
+                                <div class="screenshot-wrapper">
+                                    <img src="images/24.png"
+                                        alt="Screenshot showing success message confirming the user was added"
+                                        class="zoomable-screenshot">
+                                    <div class="zoom-overlay">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                        </svg>
+                                        <span>Click to Zoom</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-item">
+                            <div class="step-number-sub">4.5</div>
+                            <div class="step-details">
+                                <p>Confirm the user now appears in the active group members table.</p>
+                                <div class="screenshot-wrapper">
+                                    <img src="images/25.png"
+                                        alt="Screenshot showing the updated Members table containing the newly added user"
+                                        class="zoomable-screenshot">
+                                    <div class="zoom-overlay">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                        </svg>
+                                        <span>Click to Zoom</span>
+                                    </div>
+                                </div>    
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
