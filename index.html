@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Step-by-step wiki documentation for setting up a new staff member in the Microsoft 365 Admin Center, including license assignment, MFA registration, distribution groups, and manager onboarding email templates.">
+    <title>M365 Onboarding Wiki: Staff Account Setup Guide</title>
+
+    <!-- Premium Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Link Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Main Navigation Tabs -->
+    <div class="main-tabs-bar">
+        <div class="tabs-container">
+            <button class="tab-btn active" id="tab-btn-guide" aria-selected="true" role="tab" aria-controls="tab-panel-guide">
+                <svg class="tab-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+                <span>Wiki Guide</span>
+            </button>
+            <button class="tab-btn" id="tab-btn-scripts" aria-selected="false" role="tab" aria-controls="tab-panel-scripts">
+                <svg class="tab-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                <span>PowerShell Scripts</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="tab-panel-guide" class="tab-panel active" role="tabpanel" aria-labelledby="tab-btn-guide">
+        <!-- Sticky Dashboard Controller (Quick Nav & Noticeable Screenshot Toggle) -->
+        <div class="dashboard-bar" id="dashboard-bar">
+        <div class="dashboard-container">
+            <!-- Navigation Links -->
+            <nav class="quick-nav" aria-label="Step navigation">
+                <a href="#section-create" class="nav-link active" id="nav-btn-create">
+                    <span class="nav-number">1</span> Create User
+                </a>
+                <a href="#section-license" class="nav-link" id="nav-btn-license">
+                    <span class="nav-number">2</span> Assign License
+                </a>
+                <a href="#section-mfa" class="nav-link" id="nav-btn-mfa">
+                    <span class="nav-number">3</span> Enroll MFA
+                </a>
+                <a href="#section-group" class="nav-link" id="nav-btn-group">
+                    <span class="nav-number">4</span> Add to Group
+                </a>
+                <a href="#section-email" class="nav-link" id="nav-btn-email">
+                    <span class="nav-number">5</span> Send Credentials
+                </a>
+            </nav>
+
+            <!-- Interactive Screenshot Visibility Switcher -->
+            <div class="control-panel">
+                <span class="toggle-label">Show Screenshots</span>
+                <label class="switch" for="screenshot-toggle" aria-label="Toggle all screenshots visibility">
+                    <input type="checkbox" id="screenshot-toggle" checked>
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header Section -->
+    <header class="main-header">
+        <div class="header-content">
+            <div class="header-badge">Admin Reference Guide</div>
+            <h1>Setting Up a New Staff Member in Microsoft 365 Admin Center</h1>
+
+            <div class="metadata-bar">
+                <span class="meta-item">
+                    <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Est. Time: 10 mins
+                </span>
+                <span class="meta-item">
+                    <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4">
+                        </path>
+                    </svg>
+                    5 Main Steps
+                </span>
+                <span class="meta-item">
+                    <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+                        </path>
+                    </svg>
+                    Verified Process
+                </span>
+            </div>
+        </div>
+    </header>
+
+
+
+    <!-- Main Content Wrapper -->
+    <main class="content-container">
+
+        <!-- Welcome Card -->
+        <section class="intro-card">
+
+            <div class="tip-banner">
+                <strong>💡 Tip for Advanced Admins:</strong> You can click the <strong>"Show Screenshots"</strong>
+                switch in the navigation bar at any time to hide the images and view a streamlined, text-only guide.
+            </div>
+        </section>
+
+        <!-- STEP 1: Create the User -->
+        <section class="collapsible-card expanded" id="section-create">
+            <header class="card-header" id="header-create" tabindex="0" role="button" aria-expanded="true"
+                aria-controls="body-create">
+                <div class="card-title-area">
+                    <span class="step-badge">Step 1</span>
+                    <h2>Create User in M365 Admin Center</h2>
+                </div>
+                <div class="card-action-area">
+                    <span class="expand-label">Click to collapse</span>
+                    <svg class="chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7">
+                        </path>
+                    </svg>
+                </div>
+            </header>
+
+            <div class="card-body" id="body-create">
+                <div class="step-list">
+
+                    <!-- Sub-step 1.1 -->
+                    <div class="step-item">
+                        <div class="step-number-sub">1.1</div>
+                        <div class="step-details">
+                            <p>Open your browser, navigate to the <a href="https://admin.cloud.microsoft"
+                                    target="_blank" rel="noopener noreferrer" class="wiki-link">Microsoft 365 Admin
+                                    Center</a> and log in using your administrator credentials.
+                            </p>
+                            <ul>
+                                <li>In the left-hand navigation pane, select <strong>Users</strong> → <strong>Active users</strong>.</li>
+                                <li>Click the <strong>Add a user</strong> button in the top toolbar.</li>
+                            </ul>
+
+                            <div class="screenshot-wrapper">
+                                <img src="images/01-active-users.png"
+                                    alt="Screenshot of the M365 Active Users screen highlighting the Add a User button"
+                                    class="zoomable-screenshot">
+                                <div class="zoom-overlay">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                    </svg>
+                                    <span>Click to Zoom</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sub-step 1.2 -->
+                    <div class="step-item">
+                        <div class="step-number-sub">1.2</div>
+                        <div class="step-details">
+                            <p>In the <strong>Set up the basics</strong> flyout pane, fill in the following details:</p>
+                            <ul>
+                                <li><strong>First name</strong> & <strong>Last name</strong> of the employee.</li>
+                                <li><strong>Display name</strong> (automatically generated, verify format).</li>
+                                <li><strong>Username</strong> (create using corporate format: <code>first.last</code> or
+                                    <code>initial.last</code>).</li>
+                            </ul>
+                            <p>Verify that the correct corporate domain is selected in the dropdown (e.g.
+                                <code>@yourcompany.com</code>).</p>
+                            <p>Under password settings, ensure the following checkboxes are checked:</p>
+                            <ul>
+                                <li><strong>Automatically create a password</strong> (ensures high entropy).</li>
+                                <li><strong>Require this user to change password when they first sign in</strong>
+                                    (crucial for zero-trust security).</li>
+                            </ul>
+                            <p>Click <strong>Next</strong> at the bottom of the pane.</p>
+
+                            <div class="screenshot-wrapper">
+                                <img src="images/02-user-details.png"
+                                    alt="Screenshot of the basic user setup flyout panel showing name, username, and password checkboxes"
+                                    class="zoomable-screenshot">
+                                <div class="zoom-overlay">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                    </svg>
+                                    <span>Click to Zoom</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sub-step 1.3 -->
+                    <div class="step-item">
+                        <div class="step-number-sub">1.3</div>
+                        <div class="step-details">
+                            <p>In the <strong>Assign product licenses</strong> pane:</p>
+                            <ol>
+                                <li>Select the correct <strong>Location / country</strong> where the employee resides.
+                                </li>
+                                <li>Tick the checkbox for <strong>Microsoft 365 Business Standard</strong>.</li>
+                                <li>Click <strong>Next</strong>.</li>
+                            </ol>
+                            
+
+                            <div class="screenshot-wrapper">
+                                <img src="images/03-assign-license.png"
+                                    alt="Screenshot of M365 Business Standard license checkbox being selected"
+                                    class="zoomable-screenshot">
+                                <div class="zoom-overlay">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                    </svg>
+                                    <span>Click to Zoom</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sub-step 1.4 -->
+                    <div class="step-item">
+                        <div class="step-number-sub">1.4</div>
+                        <div class="step-details">
+                            <p>In the <strong>Optional settings</strong> pane, expand the <strong>Profile info</strong>
+                                section to add company metadata:</p>
+                            <ul>
+                                <li><strong>Job Title</strong> (matching their contract).</li>
+                                <li><strong>Department</strong> (e.g. Sales, Finance, IT).</li>
+                                <li><strong>Contact Number</strong> (if they have a corporate mobile assigned).</li>
+                            </ul>
+                            <p>Click <strong>Next</strong>.</p>
+
+                            <div class="screenshot-wrapper">
+                                <img src="images/04-optional-details.png"
+                                    alt="Screenshot of the M365 Optional profile info fields with Job Title and Department"
+                                    class="zoomable-screenshot">
+                                <div class="zoom-overlay">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                    </svg>
+                                    <span>Click to Zoom</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sub-step 1.5 -->
+                    <div class="step-item">
+                        <div class="step-number-sub">1.5</div>
+                        <div class="step-details">
+                            <p>In the <strong>Review and finish</strong> pane, carefully double-check all details,
+                                spelling, and usernames. Once reviewed, click <strong>Finish adding</strong>.</p>
+
+                            <div class="screenshot-wrapper">
+                                <img src="images/05-review-add.png"
+                                    alt="Screenshot of M365 review screen displaying user details summary and Finish Adding button"
+                                    class="zoomable-screenshot">
+                                <div class="zoom-overlay">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                    </svg>
+                                    <span>Click to Zoom</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sub-step 1.6 -->
+                    <div class="step-item">
+                        <div class="step-number-sub">1.6</div>
+                        <div class="step-details">
+                            <p>Verify that the account was successfully created. Click <strong>Close</strong>.</p>
+                            <div class="warning-banner">
+                                <strong>⚠️ CRITICAL:</strong> Do not close the window without copying down the temporary
+                                password! You will need this for the manager confirmation email in Section 5.
+                            </div>
+
+                            <div class="screenshot-wrapper">
+                                <img src="images/06-confirmation.png"
+                                    alt="Screenshot of the successful account creation modal showing username and temporary password fields"
+                                    class="zoomable-screenshot">
+                                <div class="zoom-overlay">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                    </svg>
+                                    <span>Click to Zoom</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 2: Assign Business Standard License -->
+        <section class="collapsible-card expanded" id="section-license">
+            <header class="card-header" id="header-license" tabindex="0" role="button" aria-expanded="true"
+                aria-controls="body-license">
+                <div class="card-title-area">
+                    <span class="step-badge">Step 2</span>
+                    <h2>Assign a Business Standard License</h2>
+                </div>
+                <div class="card-action-area">
+                    <span class="expand-label">Click to collapse</span>
+                    <svg class="chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7">
+                        </path>
+                    </svg>
+                </div>
+            </header>
+
+            <div class="card-body" id="body-license">
+                <div class="step-list">
+                    <div class="step-item">
+                        <div class="step-number-sub">2.1</div>
+                        <div class="step-details">
+                            <p>If you bypassed licensing during account setup, or need to verify/modify the licenses for
+                                an existing profile:</p>
+                            <ol>
+                                <li>Search for the user in the <strong>Active users</strong> search bar.</li>
+                                <li>Click directly on their display name to expand the side-flyout detailed view.</li>
+                                <li>Navigate to the <strong>Licenses and apps</strong> tab</li>
+                                <li>Select <strong>Microsoft 365 Business Standard</strong></li>
+                                <li>click <strong>Save changes</strong>.</li>
+                            </ol>
+
+                            <div class="screenshot-wrapper">
+                                <img src="images/07-manage-licenses.png"
+                                    alt="Screenshot showing the Active User side panel on the Licenses and Apps tab with Business Standard selected"
+                                    class="zoomable-screenshot">
+                                <div class="zoom-overlay">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                    </svg>
+                                    <span>Click to Zoom</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 3: Enrol in MFA -->
+        <section class="collapsible-card expanded" id="section-mfa">
+            <header class="card-header" id="header-mfa" tabindex="0" role="button" aria-expanded="true"
+                aria-controls="body-mfa">
+                <div class="card-title-area">
+                    <span class="step-badge">Step 3</span>
+                    <h2>Enroll the User in MFA</h2>
+                </div>
+                <div class="card-action-area">
+                    <span class="expand-label">Click to collapse</span>
+                    <svg class="chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7">
+                        </path>
+                    </svg>
+                </div>
+            </header>
+
+            <div class="card-body" id="body-mfa">
+                <div class="step-list">
+                    <div class="warning-banner">
+                        <p><strong>⚠️ NOTE: This guide is for Per-user MFA setup</strong></p>
+                        <br>
+                        <p>Microsoft recommends managing MFA exclusively through <strong>Conditional Access</strong> and the unified Authentication Methods policy. This approach automatically and dynamically applies to all existing users and new hires. </p>
+                        </br>
+                        <p>Per-User MFA is a legacy feature and must be set to "Disabled" to prevent login conflicts and policy bypasses.</p>
+                        </br>
+                        <p>Only follow this guide if <strong>no Conditional Access</strong> has been set.</p>
+                </div>
+                    <div class="step-item">
+                        <div class="step-number-sub">3.1</div>
+                        <div class="step-details">
+                            <p>To enforce immediate Multi-Factor Authentication enrollment for the user account:</p>
+                            <p>From the <strong>Users</strong> → <strong>Active users</strong> menu in Microsoft 365
+                                Admin Center, search and select the newly created user.</p>
+
+                            <div class="screenshot-wrapper">
+                                <img src="images/08-enable-mfa-1.png"
+                                    alt="Screenshot showing the Active Users action bar with More Actions menu expanded highlighting Multi-factor authentication"
+                                    class="zoomable-screenshot">
+                                <div class="zoom-overlay">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                    </svg>
+                                    <span>Click to Zoom</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number-sub">3.2</div>
+                        <div class="step-details">
+                            <p>Under the account pane, locate <strong>Manage multifactor authentication</strong></p>
+                            <p>This may open in a separate Microsoft MFA page (Entra Admin Center).</p>
+
+                            <div class="screenshot-wrapper">
+                                <img src="images/08-enable-mfa-2.png"
+                                    alt="Screenshot showing the Active Users action bar with More Actions menu expanded highlighting Multi-factor authentication"
+                                    class="zoomable-screenshot">
+                                <div class="zoom-overlay">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                    </svg>
+                                    <span>Click to Zoom</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number-sub">3.3</div>
+                        <div class="step-details">
+                            <ol>
+                            <li>In the Microsoft MFA page that opened, search for the new user.</li>
+                            <li>Tick the checkbox beside the new user.</li>
+                            <li>Click <strong>Enable MFA</strong></li>
+                            </ol>
+
+                            <div class="screenshot-wrapper">
+                                <img src="images/08-enable-mfa-3.png"
+                                    alt="Screenshot showing the Active Users action bar with More Actions menu expanded highlighting Multi-factor authentication"
+                                    class="zoomable-screenshot">
+                                <div class="zoom-overlay">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                    </svg>
+                                    <span>Click to Zoom</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number-sub">3.4</div>
+                        <div class="step-details">
+                            <p>Confirm Enable multi-factor auth by clicking <strong>Enable</strong></p>
+
+                            <div class="screenshot-wrapper">
+                                <img src="images/08-enable-mfa-4.png"
+                                    alt="Screenshot showing the Active Users action bar with More Actions menu expanded highlighting Multi-factor authentication"
+                                    class="zoomable-screenshot">
+                                <div class="zoom-overlay">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                    </svg>
+                                    <span>Click to Zoom</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number-sub">3.5</div>
+                        <div class="step-details">
+                            <p>Verify the status changes to <strong>Enabled</strong></p>
+                            <div class="screenshot-wrapper">
+                                <img src="images/08-enable-mfa-5.png"
+                                    alt="Screenshot showing the Active Users action bar with More Actions menu expanded highlighting Multi-factor authentication"
+                                    class="zoomable-screenshot">
+                                <div class="zoom-overlay">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                    </svg>
+                                    <span>Click to Zoom</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 4: Add to "All Staff" Group -->
+        <section class="collapsible-card expanded" id="section-group">
+            <header class="card-header" id="header-group" tabindex="0" role="button" aria-expanded="true"
+                aria-controls="body-group">
+                <div class="card-title-area">
+                    <span class="step-badge">Step 4</span>
+                    <h2>Add User to "All Staff" Distribution List Group</h2>
+                </div>
+                <div class="card-action-area">
+                    <span class="expand-label">Click to collapse</span>
+                    <svg class="chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7">
+                        </path>
+                    </svg>
+                </div>
+            </header>
+
+            <div class="card-body" id="body-group">
+                <div class="step-list">
+
+                    <div class="step-item">
+                        <div class="step-number-sub">4.1</div>
+                        <div class="step-details">
+                            <p>To ensure the new hire receives global internal corporate announcements:</p>
+                            <p>In the M365 Admin Center left-hand side navigation pane, expand <strong>Teams &
+                                    groups</strong> and click on <strong>Active teams & groups</strong>.</p>
+                            <p>Navigate to the <strong>Distribution list</strong> tab, find the <strong>All
+                                    Staff</strong> group list entry, and click directly on it to slide open its
+                                management pane.</p>
+
+                            <div class="screenshot-wrapper">
+                                <img src="images/09-add-group-members-1.png"
+                                    alt="Screenshot showing Active Teams and Groups list on the Distribution List tab, selecting All Staff"
+                                    class="zoomable-screenshot">
+                                <div class="zoom-overlay">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                    </svg>
+                                    <span>Click to Zoom</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number-sub">4.2</div>
+                        <div class="step-details">
+                            <p>In the <strong>All Staff</strong> details pane:</p>
+                            <ol>
+                                <li>Navigate to the <strong>Members</strong> tab at the top.</li>
+                                <li>Click on the <strong>View all and manage members</strong> link.</li>
+                            </ol>
+
+                            <div class="screenshot-wrapper">
+                                <img src="images/09-add-group-members-2.png"
+                                    alt="Screenshot showing Active Teams and Groups list on the Distribution List tab, selecting All Staff"
+                                    class="zoomable-screenshot">
+                                <div class="zoom-overlay">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                    </svg>
+                                    <span>Click to Zoom</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number-sub">4.3</div>
+                        <div class="step-details">
+                            <p>Click <strong>+ Add members</strong> in the toolbar.</p>
+
+                            <div class="screenshot-wrapper">
+                                <img src="images/09-add-group-members-3.png"
+                                    alt="Screenshot showing Active Teams and Groups list on the Distribution List tab, selecting All Staff"
+                                    class="zoomable-screenshot">
+                                <div class="zoom-overlay">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                    </svg>
+                                    <span>Click to Zoom</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number-sub">4.4</div>
+                        <div class="step-details">
+                            <ol>
+                                <li>Search for the newly created staff member in the search box</li>
+                                <li>Select the checkbox next to their name</li>
+                                <li>click <strong>Add</strong>.</li>
+                            </ol>
+
+                            <div class="screenshot-wrapper">
+                                <img src="images/09-add-group-members-4.png"
+                                    alt="Screenshot showing Active Teams and Groups list on the Distribution List tab, selecting All Staff"
+                                    class="zoomable-screenshot">
+                                <div class="zoom-overlay">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                    </svg>
+                                    <span>Click to Zoom</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="step-item">
+                        <div class="step-number-sub">4.5</div>
+                        <div class="step-details">
+                            <p>Confirm the user now appears in the member list.</p>
+                            <div class="screenshot-wrapper">
+                                <img src="images/09-add-group-members-5.png"
+                                    alt="Screenshot showing Active Teams and Groups list on the Distribution List tab, selecting All Staff"
+                                    class="zoomable-screenshot">
+                                <div class="zoom-overlay">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                                    </svg>
+                                    <span>Click to Zoom</span>
+                                </div>
+                            </div>    
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 5: Send Credentials to Manager -->
+        <section class="collapsible-card expanded" id="section-email">
+            <header class="card-header" id="header-email" tabindex="0" role="button" aria-expanded="true"
+                aria-controls="body-email">
+                <div class="card-title-area">
+                    <span class="step-badge">Step 5</span>
+                    <h2>Send Onboarding Confirmation Email to the Manager</h2>
+                </div>
+                <div class="card-action-area">
+                    <span class="expand-label">Click to collapse</span>
+                    <svg class="chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7">
+                        </path>
+                    </svg>
+                </div>
+            </header>
+
+            <div class="card-body" id="body-email">
+                <div class="step-list">
+
+                    <div class="step-item">
+                        <div class="step-number-sub">5.1</div>
+                        <div class="step-details">
+                            <p>Open Outlook or your corporate mail client. Draft a new email to the manager of the newly
+                                hired staff member.</p>
+                            <p>Use the professional pre-written email template below. Highlight, copy, and replace all
+                                brackets <code>[like this]</code> with the actual employee details.</p>
+
+
+                            <p><strong>SUBJECT:</strong> New Account Created - John Smith</p>
+
+                            <!-- Email Template Card -->
+                            <div class="email-template-card">
+                                <div class="template-header">
+                                    <div class="template-pill">Email Body Template</div>
+                                    <button class="copy-btn" id="copy-template-btn">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3">
+                                            </path>
+                                        </svg>
+                                        <span>Copy Template</span>
+                                    </button>
+                                </div>
+                                <div class="template-body" id="template-text" >
+                                    <p>
+                                    <br>
+                                    Dear [Manager Name],
+                                    <br>
+                                    <br>
+                                    The Microsoft 365 user account has been successfully provisioned and configured for our new staff member. Below are their login credentials and setup guidelines.
+                                    <br>
+                                    <br>
+                                    <ol>
+                                        <li>Account Details
+                                            <br>
+                                            <ul>
+                                                <li>Full Name: [New Hire Name]</li>
+                                                <li>Job Title: [Job Title]</li>
+                                                <li>Department: [Department Name]</li>
+                                                <li>Email: [new.hire@company.com]</li>
+                                                <li>Temporary Password: [Provide securely or insert here]</li>
+                                            </ul>
+                                        </li>
+                                        <br>
+                                        <li><p>First-Time Login & MFA Setup Guide
+                                            <br>Please share these exact steps with the new hire on their first day:
+                                            </p>
+                                            <br>
+                                            <ol>
+                                                <li>Download the App: Install the Microsoft Authenticator app on your mobile phone via the Apple App Store or Google Play Store.</li>
+                                                <li>Go to Portal: On your computer, open a web browser and go to microsoftonline.com.</li>
+                                                <li>Sign In: Enter your company email and temporary password.</li>
+                                                <li>Update Password: Create a new, secure password when prompted.</li>
+                                                <li>Set Up MFA: A message saying "More information required" will appear. Click Next.</li>
+                                                <li>Scan the QR Code: Choose "Mobile app" as your verification method, select "Receive notifications," and click Set up. Use your phone's Authenticator app to scan the QR code shown on your computer screen.</li>
+                                                <li>Verify: Follow the final on-screen prompt to test the notification and complete your setup.Best regards,</li>
+                                            </ol>
+                                        </li> 
+                                    </ol>
+                                    <br>                                    
+                                    Best regards,
+                                    <br>
+                                    [Your Name]
+                                    <br>
+                                    IT Administration Team
+                                    </p>
+                                    <br>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+    </div> <!-- End of tab-panel-guide -->
+
+    <!-- PowerShell Scripts Tab Panel -->
+    <div id="tab-panel-scripts" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-scripts">
+        <header class="main-header">
+            <div class="header-content">
+                <div class="header-badge">Automation Toolkit</div>
+                <h1>PowerShell Onboarding Scripts</h1>
+                <p class="subtitle">Reference scripts for automating user creation, license assignment, and group configuration in Microsoft 365.</p>
+            </div>
+        </header>
+
+        <main class="scripts-container">
+            <div class="scripts-layout">
+                <!-- Sidebar selector -->
+                <aside class="scripts-sidebar">
+                    <nav class="scripts-nav" aria-label="Script list">
+                        <button class="script-nav-btn active" data-script="New-UserProvisioning.ps1">
+                            <span class="script-icon">📄</span>
+                            <span class="script-name">New-UserProvisioning.ps1</span>
+                        </button>
+                        <button class="script-nav-btn" data-script="Create-User.ps1">
+                            <span class="script-icon">📄</span>
+                            <span class="script-name">Create-User.ps1</span>
+                        </button>
+                        <button class="script-nav-btn" data-script="Assign-License.ps1">
+                            <span class="script-icon">📄</span>
+                            <span class="script-name">Assign-License.ps1</span>
+                        </button>
+                        <button class="script-nav-btn" data-script="AddTo-DLGroup.ps1">
+                            <span class="script-icon">📄</span>
+                            <span class="script-name">AddTo-DLGroup.ps1</span>
+                        </button>
+                        <button class="script-nav-btn" data-script="users.csv">
+                            <span class="script-icon">📊</span>
+                            <span class="script-name">users.csv</span>
+                        </button>
+                    </nav>
+                </aside>
+
+                <!-- Code Viewer Panel -->
+                <section class="code-viewer-panel">
+                    <div class="code-viewer-header">
+                        <div class="code-viewer-title-group">
+                            <span class="code-viewer-file-icon">📄</span>
+                            <h2 class="code-viewer-file-name" id="current-script-name">New-UserProvisioning.ps1</h2>
+                        </div>
+                        <button class="copy-btn" id="copy-script-btn">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+                            </svg>
+                            <span>Copy Script</span>
+                        </button>
+                    </div>
+                    <div class="script-description-card" id="script-description-card">
+                        <!-- Dynamic metadata loaded here -->
+                    </div>
+                    <div class="code-viewer-body">
+                        <pre class="code-viewer-pre"><code class="code-viewer-code" id="script-code-content">Loading script content...</code></pre>
+                    </div>
+
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Lightbox/Zoom Zoom Overlay Modal -->
+    <div class="lightbox" id="lightbox-modal" aria-hidden="true" role="dialog" aria-label="Image viewer">
+        <div class="lightbox-backdrop"></div>
+        <button class="lightbox-close" id="lightbox-close" aria-label="Close image viewer">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+
+        <div class="lightbox-container">
+            <img src="" alt="Expanded View" id="lightbox-image" class="lightbox-image">
+        </div>
+
+        <!-- Zoom Controls Overlay -->
+        <div class="lightbox-controls">
+            <button class="zoom-btn" id="zoom-out-btn" aria-label="Zoom out">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                </svg>
+            </button>
+            <span class="zoom-level" id="zoom-indicator">100%</span>
+            <button class="zoom-btn" id="zoom-in-btn" aria-label="Zoom in">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+            </button>
+            <button class="zoom-btn" id="zoom-reset-btn" aria-label="Reset zoom">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8.89M9 11l3-3 3 3m-3-3v12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="lightbox-tooltip">Drag to pan when zoomed in. Escape to close.</div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <p>© 2026 Internal IT Wiki. Microsoft 365 Tenant Administration Documentation. Confidential for Admin Staff.</p>
+    </footer>
+
+    <!-- Link Custom JS -->
+    <script src="app.js"></script>
+</body>
+
+</html>
